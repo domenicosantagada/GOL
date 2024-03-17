@@ -91,7 +91,6 @@ int main(int argc, char* argv[])
 			exchange_VON_NEUMANN(readM, rank, rightRank, leftRank, upperRank, lowerRank, COLS_With_Ghost, ROWS_With_Ghost);
 
 
-
 		Rebuild_grid(grid, readM, rank, nProc, ROWS_With_Ghost, COLS_With_Ghost, ROWS_Grid, COLS_Grid, COLS_P, gc);
 		transFunc(rank, readM, writeM, ROWS_With_Ghost, COLS_With_Ghost, vicinatoScelto);
 		swap(readM, writeM);

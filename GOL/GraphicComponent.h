@@ -15,7 +15,7 @@ class GraphicComponent
 private:
     ALLEGRO_DISPLAY* mainDisplay;
     ALLEGRO_DISPLAY_MODE displayMode;
-    const int FPS = 30;
+    // const int FPS = 10;
 
     void initAllegroRoutines();
     void initDisplay();
@@ -24,8 +24,6 @@ private:
 public:
     GraphicComponent();
     void drawScene(int matrix[ROWS][COLS]);
-
-    //Creare funzione per dealoccare display
 };
 
 #endif

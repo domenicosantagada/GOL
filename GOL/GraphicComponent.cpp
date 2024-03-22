@@ -27,7 +27,7 @@ void GraphicComponent::initDisplay() {
 
 
 void GraphicComponent::drawScene(int matrix[ROWS][COLS]) {
-    al_clear_to_color(al_map_rgb(0, 0, 0));
+    al_clear_to_color(al_map_rgb(0, 0, 0)); // sfondo nero
     srand(time(0));
 
     int dim_x = DIMW / ROWS;
@@ -37,7 +37,7 @@ void GraphicComponent::drawScene(int matrix[ROWS][COLS]) {
     for (int i = 0; i < DIMW; i += dim_x) {
         for (int j = 0; j < DIMH; j += dim_y) {
             if (matrix[x][y] == 1) {
-                al_draw_filled_rectangle(i, j, i + dim_x, j + dim_y, al_map_rgb(230, 159, 0)); // arancione
+                al_draw_filled_rectangle(i, j, i + dim_x, j + dim_y, al_map_rgb(255, 255, 0));
             }
             y++;
         }
@@ -49,3 +49,14 @@ void GraphicComponent::drawScene(int matrix[ROWS][COLS]) {
 
     al_rest(0.05); // rallenta l'animazione per renderla visibile 
 }
+
+
+// esempio di colori rgb:
+// arancione: 230, 159, 0
+// verde: 0, 255, 0
+// rosso: 255, 0, 0
+// blu: 0, 0, 255
+// giallo: 255, 255, 0
+// viola: 255, 0, 255
+// celeste: 0, 255, 255
+// bianco: 255, 255, 255

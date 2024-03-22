@@ -1,3 +1,6 @@
+// Il gioco della vita di Conway
+// Autori: Santagada - Vacca
+
 #include "GraphicComponent.h"
 #include "mpi_utils.h"
 

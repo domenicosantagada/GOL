@@ -7,8 +7,8 @@
 
 int main(int argc, char* argv[])
 {
-
-	int rank, nProc; // Rank e numero di processi
+	// Rank e numero di processi
+	int rank, nProc;
 
 	// Rank da utilizzare per VON_NEUMANN senza confini
 	int rightRank = 0, leftRank = 0, upperRank = 0, lowerRank = 0;	// sono le variabili che contengono il  numero dei rank dei processi vicini

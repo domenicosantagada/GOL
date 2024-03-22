@@ -14,7 +14,7 @@
 
 #include "GraphicComponent.h"
 
-#define MAX_STEPS 300
+#define MAX_STEPS 500
 
 #define v(r, c) (((r) * (COLS_With_Ghost)) + (c))
 

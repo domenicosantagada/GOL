@@ -18,19 +18,19 @@ int main(int argc, char* argv[])
 
 	int upperDiagonalLeft = -1, upperDiagonalRight = -1, lowerDiagonLeft = -1, lowerDiagonalRight = -1;
 
-	// Tipo di neighborhood
+	// Variabile che conterrà il tipo di vicinato scelto dall'utente (1 per MOORE e 2 per VON_NEUMANN)
 	int vicinatoScelto = 0;
 
-	// Valori per calcolare la dimensione delle sottomatrici per ogni processo, COLS_P è il numero di processi per riga 
+	// Variabili che rappresentano la dimensione delle sottomatrici per ogni processo, COLS_P è il numero di processi per riga 
 	int ROWS_Grid = 1, COLS_Grid = 1, COLS_P = 1;
 
-	// Valori di colonne e righe della sotto_matrice con celle fantasma inizialmente settate a 0
+	// Variabili che rappresentano la dimensione delle sottomatrici con l'aggiunta delle celle fantasma inizialmente settate a 0
 	int COLS_With_Ghost = 0, ROWS_With_Ghost = 0;
 
 	// Componente grafica allegro per stampa 
 	GraphicComponent* gc = NULL;
 
-	// Array per conservare i valori delle sottomatrici per ogni processo
+	// Puntatori per conservare i valori delle sottomatrici di ogni processo ad ogni step
 	int* readM = NULL;
 	int* writeM = NULL;
 
@@ -42,7 +42,7 @@ int main(int argc, char* argv[])
 	MPI_Comm_size(MPI_COMM_WORLD, &nProc); // Numero di processi
 	MPI_Comm_rank(MPI_COMM_WORLD, &rank); // Rank del processo
 
-	// Funzione per scegliere il tipo di neighborhood, la variabile vicinatoScelto conterrà il valore scelto 1 per MOORE e 2 per VON_NEUMANN
+	// Funzione per scegliere il tipo di vicinato, la variabile vicinatoScelto conterrà il valore scelto (1 per MOORE e 2 per VON_NEUMANN)
 	vicinatoScelto = choose_neighborhood(rank, nProc);
 
 	// Costruzione della sotto_matrice di ogni processo 
@@ -57,7 +57,8 @@ int main(int argc, char* argv[])
 	ROWS_With_Ghost = ROWS_Grid + 2;
 
 	// In base alla scelta eseguita dall'utente sul tipo di vicinato trovo i processi tra cui deve esserci lo scambio 
-	if (vicinatoScelto == 1) {
+	if (vicinatoScelto == 1) 
+	{
 		find_neighborhood_MOORE(rank, nProc, COLS_P, rightRank_b, leftRank_b, upperRank_b, lowerRank_b, upperDiagonalLeft, upperDiagonalRight, lowerDiagonLeft, lowerDiagonalRight);
 	}
 	else

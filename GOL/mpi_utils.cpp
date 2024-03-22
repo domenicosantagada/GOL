@@ -2,13 +2,13 @@
 
 // Funzione per scegliere il tipo di neighborhood
 // La funzione oltre a restituire il tipo di vicinato scelto, invia a tutti i processi il tipo di vicinato scelto
-// Questa è chiamata da tutti i processi, ma la scelta del tipo di vicinato viene fatta solo dal processo 0
-// mentre gli altri processi ricevono il tipo di vicinato scelto
+// Questa è chiamata da tutti i processi, ma la richiesta della scelta del tipo di vicinato all'utente è gestita dal processo 0
+// Tutti gli altri processi ricevono il tipo di vicinato scelto dal processo 0
 int choose_neighborhood(int& rank, int& nProc) {    // passo rank e nProc per poter fare la send e la receive
 
 	int vicinatoScelto = 0; // variabile che conterrà il tipo di vicinato scelto inizialmente settata a 0
 
-	// la scelta del tipo di vicinato viene fatta solo dal processo 0
+	// la scelta del tipo di vicinato è gestita solo dal processo 0
 	if (rank == 0)
 	{
 
@@ -17,8 +17,8 @@ int choose_neighborhood(int& rank, int& nProc) {    // passo rank e nProc per po
 		do
 		{
 
-			std::cout << "Scegliere tipo di vicinato: MOORE oppure VON\n";
-
+			std::cout << "Scegliere tipo di vicinato: MOORE oppure VON.\n";
+			std::cout << "Scelta:   ";
 			std::cin >> scelta;
 
 			if (scelta == "MOORE")
@@ -40,7 +40,7 @@ int choose_neighborhood(int& rank, int& nProc) {    // passo rank e nProc per po
 		} while (true); // esege il ciclo finchè non viene inserito MOORE o VON
 
 		// invio il tipo di vicinato scelto a tutti i processi, tranne che al processo 0 che già lo sa
-		for (int i = 1; i < nProc; i++)
+		for (int i = 1; i < nProc; i++) // quindi parto da rank 1 fino ad nProc
 		{
 			MPI_Send(&vicinatoScelto, 1, MPI_INT, i, 0, MPI_COMM_WORLD);
 			// la send prende come argomenti:
@@ -57,6 +57,7 @@ int choose_neighborhood(int& rank, int& nProc) {    // passo rank e nProc per po
 
 	else
 	{
+		// se non sono il rank 0 allora entro in questo blocco di codice e ricevo il tipo di vicinato scelto dal processo 0
 
 		MPI_Recv(&vicinatoScelto, 1, MPI_INT, 0, 0, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
 		// la receive prende come argomenti:
@@ -160,7 +161,7 @@ void init(int* readM, int grid[][COLS], int& COLS_With_Ghost, int& ROWS_With_Gho
 	{
 		for (int j = 1; j < COLS_With_Ghost - 1; j++)
 		{
-			readM[v(i, j)] = rand() % 2;
+		//	readM[v(i, j)] = rand() % 2;
 		}
 	}
 
@@ -200,7 +201,8 @@ int find_relative_COLS(int& nProc, int& COLS_Grid, int& ROWS_Grid, int& COLS_P)
 
 	int n_Block_Sub_grid = N_block_grid / nProc; // numero di celle per ogni sottogriglia
 
-	int totalMultiple = 1, partial_multiple = 1;
+	int totalMultiple = 1; // alla fine sarà uguale a n_Block_Sub_grid
+	int partial_multiple = 1;
 
 	int value = 1;
 
@@ -210,8 +212,7 @@ int find_relative_COLS(int& nProc, int& COLS_Grid, int& ROWS_Grid, int& COLS_P)
 	// Se il numero di celle della matrice originale non è divisibile per il numero di processi
 	if (N_block_grid % nProc != 0)
 	{
-
-		std::cout << "Il numeroi celle della matrice non è divisibile equamente per il numero di processi." << "\n";
+		std::cout << "Il numero di celle della matrice non è divisibile equamente per il numero di processi." << "\n";
 
 		exit(1); // termina il programma
 	}
@@ -219,9 +220,7 @@ int find_relative_COLS(int& nProc, int& COLS_Grid, int& ROWS_Grid, int& COLS_P)
 	// Se il numero di celle della matrice originale è uguale al numero di processi, allora le sottogriglie avranno dimensioni 1x1
 	if (N_block_grid == nProc)
 	{
-
 		COLS_Grid = 1;
-
 		ROWS_Grid = 1;
 
 		COLS_P = COLS; // signica che ci saranno COLS processi per riga. Esempio una matrice 3 * 3 con 9 processi avrà 3 processi per riga
@@ -280,11 +279,13 @@ int find_relative_COLS(int& nProc, int& COLS_Grid, int& ROWS_Grid, int& COLS_P)
 	std::vector<std::vector<int> > res = subsets(sub_multiple);
 
 	// stampa i divisori di n_Block_Sub_grid
-	for (int i = 0; i < res.size(); i++) {
+	for (int i = 0; i < res.size(); i++)
+	{
 		ROWS_Grid = 1; // inizializza ROWS_Grid a 1, alla fine conterra il numero di righe della sottomatrice 
-		for (int j = 0; j < res[i].size(); j++) {
+		
+		for (int j = 0; j < res[i].size(); j++)
+		{
 			ROWS_Grid *= res[i][j]; // moltiplica ROWS_Grid per ogni elemento di res[i]
-
 		}
 		COLS_Grid = totalMultiple / ROWS_Grid;
 		// COLS_Grid è uguale a n_Block_Sub_grid diviso ROWS_Grid (es. se n_Block_Sub_grid è 12 e ROWS_Grid è 3 allora COLS_Grid sarà 4)

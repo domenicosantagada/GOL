@@ -57,7 +57,7 @@ int main(int argc, char* argv[])
 	ROWS_With_Ghost = ROWS_Grid + 2;
 
 	// In base alla scelta eseguita dall'utente sul tipo di vicinato trovo i processi tra cui deve esserci lo scambio 
-	if (vicinatoScelto == 1) 
+	if (vicinatoScelto == 1)
 	{
 		find_neighborhood_MOORE(rank, nProc, COLS_P, rightRank_b, leftRank_b, upperRank_b, lowerRank_b, upperDiagonalLeft, upperDiagonalRight, lowerDiagonLeft, lowerDiagonalRight);
 	}
@@ -110,7 +110,7 @@ int main(int argc, char* argv[])
 	}
 
 	// Deallocazione della memoria
-	delete[] readM; 
+	delete[] readM;
 	delete[] writeM;
 
 	MPI_Finalize();

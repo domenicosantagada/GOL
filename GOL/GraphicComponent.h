@@ -1,9 +1,9 @@
 #ifndef GC_H
 #define GC_H
-#define DIMW 1000
-#define DIMH 1000
-#define ROWS 100
-#define COLS 100
+#define DIMW 1000 // dimensione finestra
+#define DIMH 1000 // dimensione finestra
+#define ROWS 60
+#define COLS 60
 
 #include <iostream>
 
@@ -15,7 +15,6 @@ class GraphicComponent
 private:
     ALLEGRO_DISPLAY* mainDisplay;
     ALLEGRO_DISPLAY_MODE displayMode;
-    // const int FPS = 10;
 
     void initAllegroRoutines();
     void initDisplay();

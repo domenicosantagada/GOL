@@ -139,7 +139,7 @@ void find_neighborhood_MOORE(int& rank, int& nProc, int COLS_P, int& rightRank_b
 	}
 
 	// stampa di debug
-	std::cout << "Rank: " << rank << " -> " << upperDiagonalLeft << " " << upperRank_b << " " << upperDiagonalRight << " " << rightRank_b << " " << lowerDiagonalRight << " " << lowerRank_b << " " << lowerDiagonLeft << " " << leftRank_b << std::endl;
+	// std::cout << "Rank: " << rank << " -> " << upperDiagonalLeft << " " << upperRank_b << " " << upperDiagonalRight << " " << rightRank_b << " " << lowerDiagonalRight << " " << lowerRank_b << " " << lowerDiagonLeft << " " << leftRank_b << std::endl;
 
 }
 
@@ -161,7 +161,7 @@ void init(int* readM, int grid[][COLS], int& COLS_With_Ghost, int& ROWS_With_Gho
 	{
 		for (int j = 1; j < COLS_With_Ghost - 1; j++)
 		{
-		//	readM[v(i, j)] = rand() % 2;
+			readM[v(i, j)] = rand() % 2;
 		}
 	}
 
@@ -282,7 +282,7 @@ int find_relative_COLS(int& nProc, int& COLS_Grid, int& ROWS_Grid, int& COLS_P)
 	for (int i = 0; i < res.size(); i++)
 	{
 		ROWS_Grid = 1; // inizializza ROWS_Grid a 1, alla fine conterra il numero di righe della sottomatrice 
-		
+
 		for (int j = 0; j < res[i].size(); j++)
 		{
 			ROWS_Grid *= res[i][j]; // moltiplica ROWS_Grid per ogni elemento di res[i]
@@ -298,8 +298,6 @@ int find_relative_COLS(int& nProc, int& COLS_Grid, int& ROWS_Grid, int& COLS_P)
 		{
 
 			COLS_P = COLS / COLS_Grid;
-
-			std::cout << "Rows: " << ROWS_Grid << "  Cols: " << COLS_Grid << "\n";
 
 			return 0;
 		}
@@ -395,19 +393,6 @@ void exchange_VON_NEUMANN(int* curr_grid, int& rank, int& rightRank, int& leftRa
 
 	MPI_Isend(&curr_grid[v(1, COLS_With_Ghost - 2)], 1, col, rightRank, 3, MPI_COMM_WORLD, &send_req[3]);
 
-	/*
-	MPI_Irecv(&curr_grid[v(ROWS_With_Ghost - 1, 1)], 1, contiguous_row, lowerRank, 0, MPI_COMM_WORLD, &recv_req[0]);
-	MPI_Isend(&curr_grid[v(1, 1)], 1, contiguous_row, upperRank, 0, MPI_COMM_WORLD, &send_req[0]);
-
-	MPI_Irecv(&curr_grid[v(0, 1)], 1, contiguous_row, upperRank, 1, MPI_COMM_WORLD, &recv_req[1]);
-	MPI_Isend(&curr_grid[v(ROWS_With_Ghost - 2, 1)], 1, contiguous_row, lowerRank, 1, MPI_COMM_WORLD, &send_req[1]);
-
-	MPI_Irecv(&curr_grid[v(1, COLS_With_Ghost - 1)], 1, col, rightRank, 2, MPI_COMM_WORLD, &recv_req[2]);
-	MPI_Isend(&curr_grid[v(1, 1)], 1, col, leftRank, 2, MPI_COMM_WORLD, &send_req[2]);
-
-	MPI_Irecv(&curr_grid[v(1, 0)], 1, col, leftRank, 3, MPI_COMM_WORLD, &recv_req[3]);
-	MPI_Isend(&curr_grid[v(1, COLS_With_Ghost - 2)], 1, col, rightRank, 3, MPI_COMM_WORLD, &send_req[3]);
-	*/
 
 	MPI_Waitall(4, recv_req, status);
 }

@@ -16,14 +16,12 @@ int choose_neighborhood(int& rank, int& nProc) {    // passo rank e nProc per po
 
 		do
 		{
-
 			std::cout << "Scegliere tipo di vicinato: MOORE oppure VON.\n";
 			std::cout << "Scelta:   ";
 			std::cin >> scelta;
 
 			if (scelta == "MOORE")
 			{
-
 				vicinatoScelto = 1;
 
 				break;
@@ -31,7 +29,6 @@ int choose_neighborhood(int& rank, int& nProc) {    // passo rank e nProc per po
 
 			else if (scelta == "VON")
 			{
-
 				vicinatoScelto = 2;
 
 				break;
@@ -96,7 +93,7 @@ void find_neighborhood_VON_NEUMANN(int& rank, int& nProc, int& COLS_P, int& righ
 void find_neighborhood_MOORE(int& rank, int& nProc, int COLS_P, int& rightRank_b, int& leftRank_b, int& upperRank_b, int& lowerRank_b, int& upperDiagonalLeft, int& upperDiagonalRight, int& lowerDiagonLeft, int& lowerDiagonalRight) {
 
 
-	// rank di destra, sinistra, sopra e sotto (NB. se il ranl corrente si trova su un bordo allora alcuni vicini saranno impostati a -1)
+	// rank di destra, sinistra, sopra e sotto (NB. se il rank corrente si trova su un bordo allora alcuni vicini saranno impostati a -1)
 	rightRank_b = (abs(((rank + 1) / COLS_P) - rank / COLS_P) == 0) ? rank + 1 : -1;
 
 	leftRank_b = (abs(((rank - 1) / COLS_P) - rank / COLS_P) == 0) ? rank - 1 : -1;
@@ -202,7 +199,7 @@ int find_relative_COLS(int& nProc, int& COLS_Grid, int& ROWS_Grid, int& COLS_P)
 	int n_Block_Sub_grid = N_block_grid / nProc; // numero di celle per ogni sottogriglia
 
 	int totalMultiple = 1; // alla fine sarà uguale a n_Block_Sub_grid
-	int partial_multiple = 1;
+	// int partial_multiple = 1;
 
 	int value = 1;
 
@@ -233,7 +230,9 @@ int find_relative_COLS(int& nProc, int& COLS_Grid, int& ROWS_Grid, int& COLS_P)
 
 	value = sqrt(n_Block_Sub_grid); // calcola la radice quadrata di n_Block_Sub_grid e la salva in value (NB. è salvata solo la parte intera poichè value è di tipo int)
 
-	if (value * value == n_Block_Sub_grid) { // se il quadrato di value è uguale a n_Block_Sub_grid significa che n_Block_Sub_grid è un quadrato perfetto
+	if (value * value == n_Block_Sub_grid)
+	{
+		// se il quadrato di value è uguale a n_Block_Sub_grid significa che n_Block_Sub_grid è un quadrato perfetto
 
 		COLS_Grid = value;
 		ROWS_Grid = value;
@@ -241,7 +240,6 @@ int find_relative_COLS(int& nProc, int& COLS_Grid, int& ROWS_Grid, int& COLS_P)
 		COLS_P = COLS / COLS_Grid;
 
 		return 0; // termina la funzione find_relative_COLS
-
 	}
 
 	// se siamo arrivati qui significa che n_Block_Sub_grid non è un quadrato perfetto pertanto dobbiamo trovare i divisori di n_Block_Sub_grid
@@ -271,7 +269,8 @@ int find_relative_COLS(int& nProc, int& COLS_Grid, int& ROWS_Grid, int& COLS_P)
 		}
 	}
 
-	for (auto i : sub_multiple) {
+	for (auto i : sub_multiple)
+	{
 		totalMultiple *= i; // corrisponde a n_Block_Sub_grid
 	}
 
@@ -340,7 +339,6 @@ void calcSubset(std::vector<int>& A, std::vector<std::vector<int> >& res, std::v
 
 void exchange_VON_NEUMANN(int* curr_grid, int& rank, int& rightRank, int& leftRank, int& upperRank, int& lowerRank, int& COLS_With_Ghost, int& ROWS_With_Ghost)
 {
-
 	MPI_Status status[4];
 	MPI_Request send_req[4], recv_req[4];
 
@@ -399,7 +397,6 @@ void exchange_VON_NEUMANN(int* curr_grid, int& rank, int& rightRank, int& leftRa
 
 void exchange_MOORE(int* curr_grid, int& rank, int& rightRank_b, int& leftRank_b, int& upperRank_b, int& lowerRank_b, int& upperDiagonalLeft, int& upperDiagonalRight, int& lowerDiagonLeft, int& lowerDiagonalRight, int& COLS_With_Ghost, int& ROWS_With_Ghost)
 {
-
 	MPI_Datatype contiguous_row, col;
 
 	MPI_Status s, s1;
@@ -493,7 +490,6 @@ void exchange_MOORE(int* curr_grid, int& rank, int& rightRank_b, int& leftRank_b
 // Funzione per scambiare i puntatori delle matrici, la matrice di lettura diventa la matrice di scrittura e viceversa
 void swap(int*& readM, int*& writeM)
 {
-
 	int* p = readM;
 
 	readM = writeM;
@@ -504,7 +500,6 @@ void swap(int*& readM, int*& writeM)
 // Funzione che applica le regole per decidere se una cella deve essere accesa o spenta
 void transFuncCell(int& rank, int* readM, int* writeM, int& i, int& j, int& ROWS_With_Ghost, int& COLS_With_Ghost, int& vicinatoScelto)
 {
-
 	int cont = 0;
 
 	// calcoliamo il numero di celle vive attorno alla cella corrente
@@ -525,6 +520,7 @@ void transFuncCell(int& rank, int* readM, int* writeM, int& i, int& j, int& ROWS
 		else
 			writeM[v(i, j)] = 0; // altrimenti la cella corrente muore
 	}
+
 	else // se la cella corrente è morta
 	{
 		if (cont == 3) // se il numero di celle vive attorno alla cella corrente è 3 allora la cella corrente diventa viva
@@ -538,7 +534,6 @@ void transFuncCell(int& rank, int* readM, int* writeM, int& i, int& j, int& ROWS
 // Funzione che serve per calcolare il nuovo stato di ogni cella
 void transFunc(int& rank, int* readM, int* writeM, int& ROWS_With_Ghost, int& COLS_With_Ghost, int& vicinatoScelto)
 {
-
 	for (int i = 1; i < ROWS_With_Ghost - 1; i++)
 	{
 		for (int j = 1; j < COLS_With_Ghost - 1; j++)
@@ -551,7 +546,6 @@ void transFunc(int& rank, int* readM, int* writeM, int& ROWS_With_Ghost, int& CO
 // funione per ricostruire la griglia
 void Rebuild_grid(int grid[][COLS], int*& readM, int& rank, int& nProc, int& ROWS_With_Ghost, int& COLS_With_Ghost, int& ROWS_Grid, int& COLS_Grid, int& COLS_P, GraphicComponent* gc)
 {
-
 	int* readM_without_ghost; // matrice senza ghost cells
 
 	int ROWS_WithOut_Ghost = ROWS_With_Ghost - 2; // numero di righe senza ghost cells
@@ -563,7 +557,6 @@ void Rebuild_grid(int grid[][COLS], int*& readM, int& rank, int& nProc, int& ROW
 
 	readM_without_ghost = new int[(ROWS_WithOut_Ghost) * (COLS_WithOut_Ghost)];
 	{
-
 		int* readM_without_ghost;
 
 		int ROWS_WithOut_Ghost = ROWS_With_Ghost - 2;
@@ -578,10 +571,8 @@ void Rebuild_grid(int grid[][COLS], int*& readM, int& rank, int& nProc, int& ROW
 
 		for (int i = 0; i < ROWS_WithOut_Ghost; i++)
 		{
-
 			for (int j = 0; j < COLS_WithOut_Ghost; j++)
 			{
-
 				readM_without_ghost[v_No_Ghost(i, j)] = 0;
 			}
 
@@ -589,13 +580,10 @@ void Rebuild_grid(int grid[][COLS], int*& readM, int& rank, int& nProc, int& ROW
 
 		if (rank != 0)
 		{
-
 			for (int i = 1; i < ROWS_With_Ghost - 1; i++)
 			{
-
 				for (int j = 1; j < COLS_With_Ghost - 1; j++)
 				{
-
 					readM_without_ghost[v_No_Ghost(i - 1, j - 1)] = readM[v(i, j)];
 				}
 			}
@@ -605,7 +593,6 @@ void Rebuild_grid(int grid[][COLS], int*& readM, int& rank, int& nProc, int& ROW
 
 		if (rank == 0)
 		{
-
 			MPI_Status s;
 
 			int i_proc0 = 0;
@@ -623,10 +610,8 @@ void Rebuild_grid(int grid[][COLS], int*& readM, int& rank, int& nProc, int& ROW
 
 			for (int x = 0; x < ROWS_WithOut_Ghost; x++)
 			{
-
 				for (int j = 0; j < COLS_WithOut_Ghost; j++)
 				{
-
 					grid[i_proc0][j_proc0] = readM_without_ghost[v_No_Ghost(x, j)];
 
 					j_proc0 += 1;
@@ -639,7 +624,6 @@ void Rebuild_grid(int grid[][COLS], int*& readM, int& rank, int& nProc, int& ROW
 
 			for (int i = 1; i < nProc; i++)
 			{
-
 				MPI_Recv(readM_without_ghost, size, MPI_INT, i, i, MPI_COMM_WORLD, &s);
 
 				int i_start = (i / COLS_P) * ROWS_Grid;
@@ -651,7 +635,6 @@ void Rebuild_grid(int grid[][COLS], int*& readM, int& rank, int& nProc, int& ROW
 
 					for (int j = 0; j < COLS_WithOut_Ghost; j++)
 					{
-
 						grid[i_start][j_start] = readM_without_ghost[v_No_Ghost(x, j)];
 
 						j_start += 1;
@@ -661,7 +644,6 @@ void Rebuild_grid(int grid[][COLS], int*& readM, int& rank, int& nProc, int& ROW
 
 					j_start -= COLS_WithOut_Ghost;
 				}
-
 			}
 
 			gc->drawScene(grid);

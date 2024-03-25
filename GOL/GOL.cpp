@@ -48,7 +48,6 @@ int main(int argc, char* argv[])
 	// Costruzione della sotto_matrice di ogni processo 
 	find_relative_COLS(nProc, COLS_Grid, ROWS_Grid, COLS_P);
 
-	//DA TOGLIERE 
 	if (rank == 0)
 		std::cout << "Le sotto matrici sono di dimensioni: " << ROWS_Grid << "x" << COLS_Grid << std::endl;
 
@@ -87,7 +86,6 @@ int main(int argc, char* argv[])
 	// Ciclo per il numero di iterazioni
 	for (int i = 0; i < MAX_STEPS; i++)
 	{
-
 		if (vicinatoScelto == 1)
 			exchange_MOORE(readM, rank, rightRank_b, leftRank_b, upperRank_b, lowerRank_b, upperDiagonalLeft, upperDiagonalRight, lowerDiagonLeft, lowerDiagonalRight, COLS_With_Ghost, ROWS_With_Ghost);
 

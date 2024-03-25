@@ -2,8 +2,8 @@
 #define GC_H
 #define DIMW 1000 // dimensione finestra
 #define DIMH 1000 // dimensione finestra
-#define ROWS 60
-#define COLS 60
+#define ROWS 100
+#define COLS 100
 
 #include <iostream>
 

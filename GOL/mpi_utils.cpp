@@ -11,7 +11,6 @@ int choose_neighborhood(int& rank, int& nProc) {    // passo rank e nProc per po
 	// la scelta del tipo di vicinato è gestita solo dal processo 0
 	if (rank == 0)
 	{
-
 		std::string scelta;
 
 		do
@@ -134,10 +133,6 @@ void find_neighborhood_MOORE(int& rank, int& nProc, int COLS_P, int& rightRank_b
 	{
 		lowerDiagonalRight = -1;
 	}
-
-	// stampa di debug
-	// std::cout << "Rank: " << rank << " -> " << upperDiagonalLeft << " " << upperRank_b << " " << upperDiagonalRight << " " << rightRank_b << " " << lowerDiagonalRight << " " << lowerRank_b << " " << lowerDiagonLeft << " " << leftRank_b << std::endl;
-
 }
 
 // Funzione per inizializzare le matrici per ogni processo
@@ -153,18 +148,20 @@ void init(int* readM, int grid[][COLS], int& COLS_With_Ghost, int& ROWS_With_Gho
 		}
 	}
 
+	// 
 	// commentare se non si vuole generare un ambiente popolato randomicamente
 	for (int i = 1; i < ROWS_With_Ghost - 1; i++)
 	{
 		for (int j = 1; j < COLS_With_Ghost - 1; j++)
 		{
-			readM[v(i, j)] = rand() % 2;
+			// readM[v(i, j)] = rand() % 2; // genera un numero casuale tra 0 e 1 quindi la cella può essere morta o viva
 		}
 	}
 
 
 	if (rank == 0)
 	{
+		// inizializza la matrice grid a 0. La matrice grid sarà la matrice TOTALE che rappresenta l'ambiente step by step
 		for (int i = 0; i < ROWS; i++)
 		{
 			for (int j = 0; j < COLS; j++)
@@ -176,7 +173,9 @@ void init(int* readM, int grid[][COLS], int& COLS_With_Ghost, int& ROWS_With_Gho
 		gc = new GraphicComponent(); // inizializza il componente grafico
 
 
+		/*
 
+		// ----- GLIDER -----
 		// Per visualizzare solo il glidere commentare  l'inizializzazione random di readM
 		int ii = (ROWS_With_Ghost / 2) + 1;
 		int jj = 2;
@@ -186,6 +185,55 @@ void init(int* readM, int grid[][COLS], int& COLS_With_Ghost, int& ROWS_With_Gho
 		readM[v(ii + 1, jj - 1)] = 1;
 		readM[v(ii + 1, jj)] = 1;
 		readM[v(ii + 1, jj + 1)] = 1;
+
+		*/
+
+
+
+		// ----- GLIDER GUN -----  con matrice 100x100 4 proessi 
+		// Per visualizzare solo il glider gun commentare  l'inizializzazione random di readM
+		int ii = (ROWS_With_Ghost / 2) + 1;
+		int jj = 2;
+
+		// Configurazione iniziale del cannone di aliante
+		readM[v(ii + 1, jj + 25)] = 1;
+		readM[v(ii + 2, jj + 23)] = 1;
+		readM[v(ii + 2, jj + 25)] = 1;
+		readM[v(ii + 3, jj + 13)] = 1;
+		readM[v(ii + 3, jj + 14)] = 1;
+		readM[v(ii + 3, jj + 21)] = 1;
+		readM[v(ii + 3, jj + 22)] = 1;
+		readM[v(ii + 3, jj + 35)] = 1;
+		readM[v(ii + 3, jj + 36)] = 1;
+		readM[v(ii + 4, jj + 12)] = 1;
+		readM[v(ii + 4, jj + 16)] = 1;
+		readM[v(ii + 4, jj + 21)] = 1;
+		readM[v(ii + 4, jj + 22)] = 1;
+		readM[v(ii + 4, jj + 35)] = 1;
+		readM[v(ii + 4, jj + 36)] = 1;
+		readM[v(ii + 5, jj + 1)] = 1;
+		readM[v(ii + 5, jj + 2)] = 1;
+		readM[v(ii + 5, jj + 11)] = 1;
+		readM[v(ii + 5, jj + 17)] = 1;
+		readM[v(ii + 5, jj + 21)] = 1;
+		readM[v(ii + 5, jj + 22)] = 1;
+		readM[v(ii + 6, jj + 1)] = 1;
+		readM[v(ii + 6, jj + 2)] = 1;
+		readM[v(ii + 6, jj + 11)] = 1;
+		readM[v(ii + 6, jj + 15)] = 1;
+		readM[v(ii + 6, jj + 17)] = 1;
+		readM[v(ii + 6, jj + 18)] = 1;
+		readM[v(ii + 6, jj + 23)] = 1;
+		readM[v(ii + 6, jj + 25)] = 1;
+		readM[v(ii + 7, jj + 11)] = 1;
+		readM[v(ii + 7, jj + 17)] = 1;
+		readM[v(ii + 7, jj + 25)] = 1;
+		readM[v(ii + 8, jj + 12)] = 1;
+		readM[v(ii + 8, jj + 16)] = 1;
+		readM[v(ii + 9, jj + 13)] = 1;
+		readM[v(ii + 9, jj + 14)] = 1;
+
+
 	}
 }
 
@@ -196,17 +244,11 @@ int find_relative_COLS(int& nProc, int& COLS_Grid, int& ROWS_Grid, int& COLS_P)
 
 	int N_block_grid = COLS * ROWS; // numero di celle totali della matrice originale
 
-	int n_Block_Sub_grid = N_block_grid / nProc; // numero di celle per ogni sottogriglia
-
-	int totalMultiple = 1; // alla fine sarà uguale a n_Block_Sub_grid
-	// int partial_multiple = 1;
-
-	int value = 1;
-
-	std::vector<int> sub_multiple; // vettore che conterrà i divisori di n_Block_Sub_grid
 
 
-	// Se il numero di celle della matrice originale non è divisibile per il numero di processi
+	// ----------  PRIMO CONTROLLO  ----------
+	// Se il numero di celle della matrice originale non è divisibile per il numero di processi -> INTERROMPI IL PROGRAMMA
+
 	if (N_block_grid % nProc != 0)
 	{
 		std::cout << "Il numero di celle della matrice non è divisibile equamente per il numero di processi." << "\n";
@@ -214,36 +256,56 @@ int find_relative_COLS(int& nProc, int& COLS_Grid, int& ROWS_Grid, int& COLS_P)
 		exit(1); // termina il programma
 	}
 
-	// Se il numero di celle della matrice originale è uguale al numero di processi, allora le sottogriglie avranno dimensioni 1x1
+
+
+
+
+	// ----------  SECONDO CONTROLLO  ----------
+	// Se il numero di celle della matrice originale è uguale al numero di processi, allora le sottomatrici avranno dimensioni 1x1
+
 	if (N_block_grid == nProc)
 	{
 		COLS_Grid = 1;
 		ROWS_Grid = 1;
 
-		COLS_P = COLS; // signica che ci saranno COLS processi per riga. Esempio una matrice 3 * 3 con 9 processi avrà 3 processi per riga
-		// e la dimensione delle sottomatrici sarà 1 * 1
+		COLS_P = COLS; // signica che ci saranno COLS processi per riga. 
+		// Esempio una matrice 3 * 3 con 9 processi avrà 3 processi per riga e la dimensione delle sottomatrici sarà 1 * 1
 
 		return 0; // termina la funzione find_relative_COLS
 	}
 
-	// altrimenti ...
 
-	value = sqrt(n_Block_Sub_grid); // calcola la radice quadrata di n_Block_Sub_grid e la salva in value (NB. è salvata solo la parte intera poichè value è di tipo int)
 
+
+
+	int n_Block_Sub_grid = N_block_grid / nProc; // numero di celle per ogni sottogriglia
+
+	int value = sqrt(n_Block_Sub_grid); // calcola la radice quadrata di n_Block_Sub_grid e la salva in value (NB. è salvata solo la parte intera poichè value è di tipo int)
+
+
+	// ----------  TERZO CONTROLLO  ----------
+	// se il quadrato di value è uguale a n_Block_Sub_grid significa che n_Block_Sub_grid è un quadrato perfetto
 	if (value * value == n_Block_Sub_grid)
 	{
-		// se il quadrato di value è uguale a n_Block_Sub_grid significa che n_Block_Sub_grid è un quadrato perfetto
-
-		COLS_Grid = value;
 		ROWS_Grid = value;
+		COLS_Grid = value;
 
 		COLS_P = COLS / COLS_Grid;
 
 		return 0; // termina la funzione find_relative_COLS
 	}
 
-	// se siamo arrivati qui significa che n_Block_Sub_grid non è un quadrato perfetto pertanto dobbiamo trovare i divisori di n_Block_Sub_grid
 
+
+
+	int totalMultiple = 1; // alla fine sarà uguale a n_Block_Sub_grid
+
+	std::vector<int> sub_multiple; // vettore che conterrà i divisori di n_Block_Sub_grid
+
+
+
+	// ----------  QUARTO CONTROLLO  ----------
+	// se siamo arrivati qui significa che n_Block_Sub_grid non è un quadrato perfetto pertanto dobbiamo trovare i divisori di n_Block_Sub_grid
 	// esegue la scomposizione in fattori primi di n_Block_Sub_grid
 	for (int i = 2; i <= n_Block_Sub_grid; i++)
 	{
@@ -277,7 +339,7 @@ int find_relative_COLS(int& nProc, int& COLS_Grid, int& ROWS_Grid, int& COLS_P)
 	// la funzione subsets restituisce tutti i sottoinsiemi di sub_multiple e li salva in res che è un vettore di vettori
 	std::vector<std::vector<int> > res = subsets(sub_multiple);
 
-	// stampa i divisori di n_Block_Sub_grid
+
 	for (int i = 0; i < res.size(); i++)
 	{
 		ROWS_Grid = 1; // inizializza ROWS_Grid a 1, alla fine conterra il numero di righe della sottomatrice 
@@ -295,14 +357,13 @@ int find_relative_COLS(int& nProc, int& COLS_Grid, int& ROWS_Grid, int& COLS_P)
 		// - ROWS_GRID sia minore di ROWS e COLS_GRID sia minore di COLS
 		if (ROWS % ROWS_Grid == 0 && COLS % COLS_Grid == 0 && ROWS != ROWS_Grid && COLS != COLS_Grid && ROWS_Grid < ROWS && COLS_Grid < COLS)
 		{
-
 			COLS_P = COLS / COLS_Grid;
 
 			return 0;
 		}
 	}
 
-	std::cout << "Valore non divisibile." << "\n";
+
 
 	exit(1); // se non si verifica nessuna delle condizioni precedenti termina il programma
 }
@@ -356,43 +417,32 @@ void exchange_VON_NEUMANN(int* curr_grid, int& rank, int& rightRank, int& leftRa
 
 
 	// Receive Upper
-
 	MPI_Irecv(&curr_grid[v(ROWS_With_Ghost - 1, 1)], 1, contiguous_row, upperRank, 0, MPI_COMM_WORLD, &recv_req[0]);
 
 	// Send Upper
-
 	MPI_Isend(&curr_grid[v(1, 1)], 1, contiguous_row, upperRank, 0, MPI_COMM_WORLD, &send_req[0]);
 
 	// Receive Lower
-
 	MPI_Irecv(&curr_grid[v(0, 1)], 1, contiguous_row, lowerRank, 1, MPI_COMM_WORLD, &recv_req[1]);
 
 	// Send Lower
-
 	MPI_Isend(&curr_grid[v(ROWS_With_Ghost - 2, 1)], 1, contiguous_row, lowerRank, 1, MPI_COMM_WORLD, &send_req[1]);
 
-	// SEND LEFT / RIGHT
 
 	// Receive Left
-
 	MPI_Irecv(&curr_grid[v(1, COLS_With_Ghost - 1)], 1, col, leftRank, 2, MPI_COMM_WORLD, &recv_req[2]);
 
 	// Send Left
-
 	MPI_Isend(&curr_grid[v(1, 1)], 1, col, leftRank, 2, MPI_COMM_WORLD, &send_req[2]);
 
-
-
 	// Reveice Right
-
 	MPI_Irecv(&curr_grid[v(1, 0)], 1, col, rightRank, 3, MPI_COMM_WORLD, &recv_req[3]);
 
 	// Send Right
-
 	MPI_Isend(&curr_grid[v(1, COLS_With_Ghost - 2)], 1, col, rightRank, 3, MPI_COMM_WORLD, &send_req[3]);
 
 
-	MPI_Waitall(4, recv_req, status);
+	MPI_Waitall(4, recv_req, status); // aspetta che tutte le receive siano completates
 }
 
 void exchange_MOORE(int* curr_grid, int& rank, int& rightRank_b, int& leftRank_b, int& upperRank_b, int& lowerRank_b, int& upperDiagonalLeft, int& upperDiagonalRight, int& lowerDiagonLeft, int& lowerDiagonalRight, int& COLS_With_Ghost, int& ROWS_With_Ghost)
@@ -490,11 +540,11 @@ void exchange_MOORE(int* curr_grid, int& rank, int& rightRank_b, int& leftRank_b
 // Funzione per scambiare i puntatori delle matrici, la matrice di lettura diventa la matrice di scrittura e viceversa
 void swap(int*& readM, int*& writeM)
 {
-	int* p = readM;
+	int* p = readM; // p punta alla matrice di lettura
 
-	readM = writeM;
+	readM = writeM; // la matrice di lettura diventa la matrice di scrittura
 
-	writeM = p;
+	writeM = p; // la matrice di scrittura diventa la matrice di lettura
 }
 
 // Funzione che applica le regole per decidere se una cella deve essere accesa o spenta

@@ -49,7 +49,25 @@ int main(int argc, char* argv[])
 	find_relative_COLS(nProc, COLS_Grid, ROWS_Grid, COLS_P);
 
 	if (rank == 0)
-		std::cout << "Le sotto matrici sono di dimensioni: " << ROWS_Grid << "x" << COLS_Grid << std::endl;
+	{
+		std::cout << std::endl << "Le sotto matrici sono di dimensioni (R x C): " << ROWS_Grid << " x " << COLS_Grid << std::endl;
+
+		std::cout << std::endl << "I processi sono cosi distribuiti: " << std::endl << std::endl;
+		for (int i = 0; i < nProc; i++)
+		{
+			if (i % COLS_P != COLS_P - 1)
+				std::cout << i << " | ";
+
+			if (i % COLS_P == COLS_P - 1)
+			{
+				std::cout << i << std::endl;
+
+				for (int j = 0; j < COLS_P * 2; j++)
+					std::cout << "- ";
+				std::cout << std::endl;
+			}
+		}
+	}
 
 	// Dai valori ottenuti con la funzione find_relative_COLS sommo sia per le colonne che le righe le celle fantasma
 	COLS_With_Ghost = COLS_Grid + 2;

@@ -154,7 +154,7 @@ void init(int* readM, int grid[][COLS], int& COLS_With_Ghost, int& ROWS_With_Gho
 	{
 		for (int j = 1; j < COLS_With_Ghost - 1; j++)
 		{
-			// readM[v(i, j)] = rand() % 2; // genera un numero casuale tra 0 e 1 quindi la cella può essere morta o viva
+			readM[v(i, j)] = rand() % 2; // genera un numero casuale tra 0 e 1 quindi la cella può essere morta o viva
 		}
 	}
 

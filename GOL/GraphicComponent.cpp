@@ -8,7 +8,8 @@ GraphicComponent::GraphicComponent() {
 void GraphicComponent::initAllegroRoutines() {
 
     //Inizializzo tutti i moduli di Allegro 
-    al_init();  // inizializza il sistema
+    al_init();  // inizializza il 
+
     al_install_keyboard();
     al_init_primitives_addon();
     srand(time(NULL));
